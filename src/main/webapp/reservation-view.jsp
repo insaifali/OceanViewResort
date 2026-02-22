@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="<%= ctx %>/assets/style.css">
 </head>
 <body>
-<jsp:include page="/WEB-INF/jsp/header.jspf" />
+<jsp:include page="/WEB-INF/jsp/header.jsp" />
 
 <div class="container">
     <div class="hero">
@@ -86,10 +86,37 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
+                    <%@ page import="java.util.*" %>
+                    <%@ page import="com.oceanview.model.Reservation" %>
+                    <%
+                        List<Reservation> results = (List<Reservation>) request.getAttribute("results");
+                        if (results == null) results = new ArrayList<>();
+                    %>
+
                     <tbody>
+                    <% if (results.isEmpty()) { %>
                     <tr>
-                        <td colspan="8" style="color: var(--muted);">No results yet. Run a search once backend is ready.</td>
+                        <td colspan="8" style="color: var(--muted);">No results. Try searching by phone or ID.</td>
                     </tr>
+                    <% } else {
+                        for (Reservation r : results) { %>
+                    <tr>
+                        <td><%= r.reservationId %></td>
+                        <td><%= r.guestName %></td>
+                        <td><%= r.phone %></td>
+                        <td><%= r.roomType %></td>
+                        <td><%= r.checkIn %> → <%= r.checkOut %></td>
+                        <td><%= String.format("%.2f", r.totalAmount) %></td>
+                        <td>
+      <span class="badge <%= "PAID".equals(r.paymentStatus) ? "ok" : ("PARTIAL".equals(r.paymentStatus) ? "warn" : "danger") %>">
+        <%= r.paymentStatus %>
+      </span>
+                        </td>
+                        <td>
+                            <a class="btn" href="<%= request.getContextPath() %>/receipt?id=<%= r.reservationId %>">Receipt</a>
+                        </td>
+                    </tr>
+                    <%  } } %>
                     </tbody>
                 </table>
             </div>
@@ -98,6 +125,6 @@
     </div>
 </div>
 
-<jsp:include page="/WEB-INF/jsp/footer.jspf" />
+<jsp:include page="/WEB-INF/jsp/footer.jsp" />
 </body>
 </html>

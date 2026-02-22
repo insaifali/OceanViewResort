@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="<%= ctx %>/assets/style.css">
 </head>
 <body>
-<jsp:include page="/WEB-INF/jsp/header.jspf" />
+<jsp:include page="/WEB-INF/jsp/header.jsp" />
 
 <div class="container">
     <div class="hero">
@@ -40,7 +40,7 @@
 
                     <div class="field half">
                         <label>Username</label>
-                        <input name="username" required placeholder="e.g., receptionist1">
+                        <input name="username" required placeholder="e.g., perera123">
                     </div>
 
                     <div class="field half">
@@ -86,6 +86,6 @@
     </div>
 </div>
 
-<jsp:include page="/WEB-INF/jsp/footer.jspf" />
+<jsp:include page="/WEB-INF/jsp/footer.jsp" />
 </body>
 </html>

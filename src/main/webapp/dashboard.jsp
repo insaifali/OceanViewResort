@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="<%= ctx %>/assets/style.css">
 </head>
 <body>
-<jsp:include page="/WEB-INF/jsp/header.jspf" />
+<jsp:include page="/WEB-INF/jsp/header.jsp" />
 
 <div class="container">
     <div class="hero">
@@ -104,6 +104,6 @@
     </div>
 </div>
 
-<jsp:include page="/WEB-INF/jsp/footer.jspf" />
+<jsp:include page="/WEB-INF/jsp/footer.jsp" />
 </body>
 </html>
