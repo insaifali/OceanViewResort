@@ -17,6 +17,7 @@
             <a class="nav-chip" href="<%= ctx %>/dashboard.jsp">Dashboard</a>
             <a class="nav-chip" href="<%= ctx %>/reservation-form.jsp">New Booking</a>
             <a class="nav-chip" href="<%= ctx %>/reservation-view.jsp">Search / View</a>
+            <a class="nav-chip" href="<%= ctx %>/availability">Availability</a>
             <a class="nav-chip" href="<%= ctx %>/help.jsp">Help</a>
 
             <% if (username == null) { %>
