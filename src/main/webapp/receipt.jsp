@@ -18,7 +18,7 @@
     String payMethod = (String) request.getAttribute("paymentMethod");
 
     // UI fallback placeholders
-    if (rid == null) rid = "—";
+    if (rid == null) rid = "0";
     if (guest == null) guest = "—";
     if (phone == null) phone = "—";
     if (room == null) room = "—";
@@ -29,7 +29,21 @@
     if (deposit == null) deposit = "—";
     if (balance == null) balance = "—";
     if (payMethod == null) payMethod = "—";
+
+    // Receipt + Payment Logic
+    String receiptNo = "OVR-" + String.format("%06d", Integer.parseInt(rid.replaceAll("\\D","0")));
+    String payStatus = (String) request.getAttribute("paymentStatus");
+    if (payStatus == null) payStatus = "UNPAID";
+    String badgeClass = "PAID".equals(payStatus) ? "ok" : ("PARTIAL".equals(payStatus) ? "warn" : "danger");
+    String role = (String) session.getAttribute("role");
+    boolean staff = "ADMIN".equals(role) || "RECEPTIONIST".equals(role);
 %>
+<%
+    String msg = request.getParameter("msg");
+    if (msg != null && !msg.trim().isEmpty()) {
+%>
+<div class="notice"><strong>Message:</strong> <%= msg %></div>
+<% } %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -57,10 +71,14 @@
             <div class="card-head">
                 <div>
                     <h2 class="card-title">Ocean View Resort • Booking Receipt</h2>
-                    <p class="card-sub">Reservation ID: <b><%= rid %></b></p>
+                    <p class="card-sub">
+                        Receipt No: <b><%= receiptNo %></b> •
+                        Reservation ID: <b><%= rid %></b>
+                    </p>
                 </div>
-                <span class="badge ok">CONFIRMED</span>
+                <span class="badge <%= badgeClass %>"><%= payStatus %></span>
             </div>
+
             <div class="card-body">
                 <table class="table">
                     <tbody>
@@ -83,6 +101,27 @@
                     <tr><th>Balance (LKR)</th><td><b><%= balance %></b></td></tr>
                     </tbody>
                 </table>
+
+                <% if (staff && !"PAID".equals(payStatus)) { %>
+                <div style="height:14px"></div>
+                <div class="notice">
+                    <strong>Pay Remaining Amount</strong><br><br>
+                    Remaining balance: <b>LKR <%= balance %></b>
+
+                    <form class="form" method="post" action="<%= ctx %>/payment/add" style="margin-top:12px;">
+                        <input type="hidden" name="id" value="<%= rid.replaceAll("\\D","") %>"/>
+
+                        <div class="field half">
+                            <label>Amount to Pay (LKR)</label>
+                            <input type="number" name="amount" min="1" step="0.01" required placeholder="e.g., 5000">
+                        </div>
+
+                        <div class="field">
+                            <button class="btn btn-primary" type="submit">Update Payment</button>
+                        </div>
+                    </form>
+                </div>
+                <% } %>
 
                 <div style="height:14px"></div>
 
@@ -111,7 +150,7 @@
                 <div class="notice">
                     ✅ Final totals are calculated by backend service.<br>
                     ✅ Receipt uses booking details stored in DB.<br>
-                    ✅ Payment status can be: Unpaid / Partial / Paid (next step).
+                    ✅ Payment status can be: Unpaid / Partial / Paid.
                 </div>
             </div>
         </div>
