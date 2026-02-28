@@ -24,6 +24,7 @@ public class ReservationCreateServlet extends HttpServlet {
             Reservation r = new Reservation();
             r.guestName = req.getParameter("guestName");
             r.phone = req.getParameter("phone");
+            r.email = req.getParameter("email");
             r.address = req.getParameter("address");
             r.roomType = req.getParameter("roomType");
             r.checkIn = LocalDate.parse(req.getParameter("checkIn"));
@@ -39,8 +40,19 @@ public class ReservationCreateServlet extends HttpServlet {
 
             int id = service.createReservation(r);
 
+            // fetch full reservation from DB for accurate totals + status
+            var saved = service.getReservation(id);
+            String receiptNo = "OVR-" + String.format("%06d", id);
+
+            com.oceanview.util.MailUtil.sendAsync(
+                    saved.email,
+                    "Ocean View Resort — Booking Confirmation (" + receiptNo + ")",
+                    com.oceanview.util.MailTemplates.bookingConfirm(saved, receiptNo)
+            );
+
             resp.sendRedirect(req.getContextPath() + "/receipt?id=" + id);
         } catch (Exception e) {
+            e.printStackTrace();
             resp.sendRedirect(req.getContextPath() + "/reservation-form.jsp?msg=" + url(e.getMessage()));
         }
     }

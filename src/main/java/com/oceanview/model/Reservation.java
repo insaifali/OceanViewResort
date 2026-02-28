@@ -6,6 +6,7 @@ public class Reservation {
     public int reservationId;
     public String guestName;
     public String phone;
+    public String email;
     public String address;
     public String roomType; // SINGLE/DOUBLE/SUITE
     public LocalDate checkIn;
