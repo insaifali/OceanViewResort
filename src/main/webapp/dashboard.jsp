@@ -9,6 +9,12 @@
         return;
     }
 %>
+<%
+    String msg = request.getParameter("msg");
+    if (msg != null && !msg.trim().isEmpty()) {
+%>
+<div class="notice"><strong>Message:</strong> <%= msg %></div>
+<% } %>
 <!DOCTYPE html>
 <html>
 <head>

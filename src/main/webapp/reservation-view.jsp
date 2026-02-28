@@ -114,6 +114,17 @@
                         </td>
                         <td>
                             <a class="btn" href="<%= request.getContextPath() %>/receipt?id=<%= r.reservationId %>">Receipt</a>
+
+                            <% String role = (String) session.getAttribute("role");
+                                if ("ADMIN".equals(role) || "RECEPTIONIST".equals(role)) { %>
+                            <form method="post" action="<%= request.getContextPath() %>/reservation/cancel" style="display:inline;">
+                                <input type="hidden" name="id" value="<%= r.reservationId %>">
+                                <button class="btn btn-danger" type="submit"
+                                        onclick="return confirm('Cancel this reservation?');">
+                                    Cancel
+                                </button>
+                            </form>
+                            <% } %>
                         </td>
                     </tr>
                     <%  } } %>

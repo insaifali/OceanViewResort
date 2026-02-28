@@ -4,6 +4,9 @@
     String username = (String) session.getAttribute("username");
     String role = (String) session.getAttribute("role");
 %>
+<% if ("ADMIN".equals(role) || "RECEPTIONIST".equals(role)) { %>
+<a class="nav-chip" href="<%= ctx %>/availability/check">Availability</a>
+<% } %>
 
 <div class="nav">
     <div class="nav-inner">
@@ -17,6 +20,7 @@
             <a class="nav-chip" href="<%= ctx %>/dashboard.jsp">Dashboard</a>
             <a class="nav-chip" href="<%= ctx %>/reservation-form.jsp">New Booking</a>
             <a class="nav-chip" href="<%= ctx %>/reservation-view.jsp">Search / View</a>
+            <a class="nav-chip" href="<%= ctx %>/availability">Availability</a>
             <a class="nav-chip" href="<%= ctx %>/help.jsp">Help</a>
 
             <% if (username == null) { %>

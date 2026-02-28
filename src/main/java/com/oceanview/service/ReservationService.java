@@ -27,13 +27,19 @@ public class ReservationService {
         int nights = DateUtil.nights(r.checkIn, r.checkOut);
         if (nights <= 0) throw new IllegalArgumentException("Invalid nights");
 
-        // Double booking prevention (by room_type)
-        boolean overlap = reservationDAO.hasOverlap(
+        // capacity-based overlap check
+        int overlaps = reservationDAO.countOverlapsForType(
                 r.roomType,
                 java.sql.Date.valueOf(r.checkIn),
                 java.sql.Date.valueOf(r.checkOut)
         );
-        if (overlap) {
+        int capacity = new com.oceanview.dao.RoomDAOImpl().getAllRooms().stream()
+                .filter(x -> x.roomType.equals(r.roomType))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Room type not found: " + r.roomType))
+                .capacity;
+
+        if (overlaps >= capacity) {
             throw new IllegalArgumentException("Selected room type is not available for those dates");
         }
 
@@ -100,6 +106,33 @@ public class ReservationService {
 
     public java.util.List<String[]> availability() throws Exception {
         return reservationDAO.getAvailability();
+    }
+
+    public java.util.List<com.oceanview.model.AvailabilityResult> checkAvailability(java.time.LocalDate from, java.time.LocalDate to) throws Exception {
+        if (from == null || to == null) throw new IllegalArgumentException("Dates required");
+        if (!to.isAfter(from)) throw new IllegalArgumentException("To date must be after From date");
+
+        java.sql.Date f = java.sql.Date.valueOf(from);
+        java.sql.Date t = java.sql.Date.valueOf(to);
+
+        java.util.List<com.oceanview.model.RoomInfo> rooms = new com.oceanview.dao.RoomDAOImpl().getAllRooms();
+        java.util.List<com.oceanview.model.AvailabilityResult> out = new java.util.ArrayList<>();
+
+        for (com.oceanview.model.RoomInfo room : rooms) {
+            int overlaps = reservationDAO.countOverlapsForType(room.roomType, f, t);
+            int available = Math.max(0, room.capacity - overlaps);
+
+            com.oceanview.model.AvailabilityResult ar = new com.oceanview.model.AvailabilityResult();
+            ar.roomType = room.roomType;
+            ar.capacity = room.capacity;
+            ar.bookedCount = overlaps;
+            ar.availableCount = available;
+            ar.available = available > 0;
+            ar.bookings = reservationDAO.overlappingBookings(room.roomType, f, t);
+
+            out.add(ar);
+        }
+        return out;
     }
 }
 

@@ -13,4 +13,6 @@ public interface ReservationDAO {
     boolean addPayment(int reservationId, double addAmount) throws Exception;
     boolean updatePayment(int reservationId, double newDeposit, double newBalance, String newStatus) throws Exception;
     java.util.List<String[]> getAvailability() throws Exception;
+    int countOverlapsForType(String roomType, java.sql.Date from, java.sql.Date to) throws Exception;
+    java.util.List<String[]> overlappingBookings(String roomType, java.sql.Date from, java.sql.Date to) throws Exception;
 }
