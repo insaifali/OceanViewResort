@@ -44,6 +44,11 @@
                         <div class="help">Use digits only. We'll validate in backend too.</div>
                     </div>
 
+                    <div class="field half">
+                        <label>Email</label>
+                        <input type="email" name="email" required placeholder="guest@email.com">
+                    </div>
+
                     <div class="field">
                         <label>Address</label>
                         <input name="address" placeholder="Optional">

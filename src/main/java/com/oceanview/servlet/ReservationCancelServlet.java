@@ -17,10 +17,26 @@ public class ReservationCancelServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(req.getParameter("id"));
+
+            // Cancel reservation
             service.cancelReservation(id, role);
 
+            // 🔽 FETCH UPDATED RESERVATION
+            var r = service.getReservation(id);   // make sure this method exists
+
+            String receiptNo = "OVR-" + String.format("%06d", id);
+
+            // 🔽 SEND EMAIL (ASYNC so UI not blocked)
+            com.oceanview.util.MailUtil.sendAsync(
+                    r.email,
+                    "Ocean View Resort — Reservation Cancelled (" + receiptNo + ")",
+                    com.oceanview.util.MailTemplates.cancelled(r, receiptNo)
+            );
+
             resp.sendRedirect(req.getContextPath() + "/reservation/search?msg=Reservation+cancelled");
+
         } catch (Exception e) {
+            e.printStackTrace();
             resp.sendRedirect(req.getContextPath() + "/reservation/search?msg=" + url(e.getMessage()));
         }
     }

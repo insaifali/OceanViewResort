@@ -19,6 +19,16 @@ public class PaymentAddServlet extends HttpServlet {
 
             boolean ok = service.addPayment(id, amount);
             if (ok) {
+
+                var updated = service.getReservation(id);
+                String receiptNo = "OVR-" + String.format("%06d", id);
+
+                com.oceanview.util.MailUtil.sendAsync(
+                        updated.email,
+                        "Ocean View Resort — Payment Updated (" + receiptNo + ")",
+                        com.oceanview.util.MailTemplates.paymentUpdate(updated, receiptNo)
+                );
+
                 resp.sendRedirect(req.getContextPath() + "/receipt?id=" + id + "&msg=Payment+updated");
             } else {
                 resp.sendRedirect(req.getContextPath() + "/receipt?id=" + id + "&msg=Payment+failed");
