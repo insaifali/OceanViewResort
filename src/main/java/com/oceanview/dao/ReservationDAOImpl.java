@@ -185,6 +185,52 @@ public class ReservationDAOImpl implements ReservationDAO {
         }
     }
 
+    @Override
+    public int countOverlapsForType(String roomType, java.sql.Date from, java.sql.Date to) throws Exception {
+        String sql =
+                "SELECT COUNT(*) AS c FROM reservations " +
+                        "WHERE status='ACTIVE' AND room_type=? " +
+                        "AND (? < check_out AND ? > check_in)";
+        try (java.sql.Connection c = com.oceanview.util.DB.getConnection();
+             java.sql.PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, roomType);
+            ps.setDate(2, from);
+            ps.setDate(3, to);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt("c");
+            }
+        }
+    }
+
+    @Override
+    public java.util.List<String[]> overlappingBookings(String roomType, java.sql.Date from, java.sql.Date to) throws Exception {
+        String sql =
+                "SELECT reservation_id, guest_name, check_in, check_out " +
+                        "FROM reservations " +
+                        "WHERE status='ACTIVE' AND room_type=? " +
+                        "AND (? < check_out AND ? > check_in) " +
+                        "ORDER BY check_in";
+        try (java.sql.Connection c = com.oceanview.util.DB.getConnection();
+             java.sql.PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, roomType);
+            ps.setDate(2, from);
+            ps.setDate(3, to);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                java.util.List<String[]> out = new java.util.ArrayList<>();
+                while (rs.next()) {
+                    out.add(new String[]{
+                            String.valueOf(rs.getInt("reservation_id")),
+                            rs.getString("guest_name"),
+                            rs.getString("check_in"),
+                            rs.getString("check_out")
+                    });
+                }
+                return out;
+            }
+        }
+    }
+
     private Reservation map(ResultSet rs) throws Exception {
         Reservation r = new Reservation();
         r.reservationId = rs.getInt("reservation_id");

@@ -20,4 +20,23 @@ public class RoomDAOImpl implements RoomDAO {
             }
         }
     }
+
+    @Override
+    public java.util.List<com.oceanview.model.RoomInfo> getAllRooms() throws Exception {
+        String sql = "SELECT room_type, price_per_night, room_capacity FROM rooms WHERE is_active=1 ORDER BY room_type";
+        try (java.sql.Connection c = com.oceanview.util.DB.getConnection();
+             java.sql.PreparedStatement ps = c.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+
+            java.util.List<com.oceanview.model.RoomInfo> out = new java.util.ArrayList<>();
+            while (rs.next()) {
+                com.oceanview.model.RoomInfo r = new com.oceanview.model.RoomInfo();
+                r.roomType = rs.getString("room_type");
+                r.rate = rs.getDouble("price_per_night");
+                r.capacity = rs.getInt("room_capacity");
+                out.add(r);
+            }
+            return out;
+        }
+    }
 }
