@@ -1,0 +1,8 @@
+mail.smtp.host=smtp.gmail.com
+mail.smtp.port=587
+mail.smtp.auth=true
+mail.smtp.starttls.enable=true
+
+mail.from=company_email@gmail.com
+mail.username=company_email@gmail.com
+mail.password=company_email_app_password
