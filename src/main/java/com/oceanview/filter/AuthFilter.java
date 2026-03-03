@@ -58,3 +58,4 @@ public class AuthFilter implements Filter {
         return path.equals("") || path.equals("/");
     }
 }
+

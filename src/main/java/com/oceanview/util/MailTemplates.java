@@ -44,3 +44,4 @@ public final class MailTemplates {
         return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
     }
 }
+

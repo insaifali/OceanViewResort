@@ -21,12 +21,12 @@ public class ReservationCancelServlet extends HttpServlet {
             // Cancel reservation
             service.cancelReservation(id, role);
 
-            // 🔽 FETCH UPDATED RESERVATION
+            // FETCH UPDATED RESERVATION
             var r = service.getReservation(id);   // make sure this method exists
 
             String receiptNo = "OVR-" + String.format("%06d", id);
 
-            // 🔽 SEND EMAIL (ASYNC so UI not blocked)
+            // SEND EMAIL (ASYNC so UI not blocked)
             com.oceanview.util.MailUtil.sendAsync(
                     r.email,
                     "Ocean View Resort — Reservation Cancelled (" + receiptNo + ")",
